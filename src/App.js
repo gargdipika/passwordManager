@@ -5,7 +5,14 @@ import PasswordItem from './Component/PasswordItem'
 import './App.css'
 
 class App extends Component {
-  state = {passList: [], website: '', username: '', password: ''}
+  state = {
+    searchInput: '',
+    isShow: false,
+    passList: [],
+    website: '',
+    username: '',
+    password: '',
+  }
 
   onClickWebsite = event => {
     this.setState({website: event.target.value})
@@ -17,6 +24,12 @@ class App extends Component {
 
   onClickPassword = event => {
     this.setState({password: event.target.value})
+  }
+
+  onClickShowPass = () => {
+    this.setState(prevState => ({
+      isShow: !prevState.isShow,
+    }))
   }
 
   onSubmitForm = event => {
@@ -35,11 +48,36 @@ class App extends Component {
     }))
   }
 
+  onChangingSearch = event => {
+    this.setState({searchInput: event.target.value})
+  }
+
+  deleteItem = id => {
+    this.setState(prevState => ({
+      passList: prevState.passList.filter(eachItem => eachItem.id !== id),
+    }))
+  }
+
   render() {
-    const {passList, website, username, password} = this.state
-    const isEmpty = passList.length === 0
+    const {
+      passList,
+      website,
+      searchInput,
+      username,
+      password,
+      isShow,
+    } = this.state
+
     const lengthOfList = passList.length
-    console.log(passList)
+    let filteredList = passList
+    if (lengthOfList !== 0) {
+      filteredList = passList.filter(eachPass =>
+        eachPass.website.toLowerCase().includes(searchInput.toLowerCase()),
+      )
+    }
+    console.log(filteredList)
+    const isEmpty = filteredList.length === 0
+
     return (
       <div className="background-container">
         <div className="inner-container">
@@ -89,7 +127,7 @@ class App extends Component {
                 />
                 <hr className="horizontal-line" />
                 <input
-                  type="text"
+                  type="password"
                   className="input"
                   placeholder="Enter Password"
                   onChange={this.onClickPassword}
@@ -112,9 +150,9 @@ class App extends Component {
             <div className="nav-container">
               <div className="pass-container">
                 <h3>Your Passwords</h3>
-                <button className="number-style" type="button">
+                <p className="number-style" type="button">
                   {lengthOfList}
-                </button>
+                </p>
               </div>
               <div className="input-container special-nav">
                 <img
@@ -123,13 +161,23 @@ class App extends Component {
                   alt="search"
                 />
                 <hr className="horizontal-line" />
-                <input className="input" placeholder="Search" type="search" />
+                <input
+                  onChange={this.onChangingSearch}
+                  className="input"
+                  placeholder="Search"
+                  type="search"
+                />
               </div>
             </div>
             <hr />
             <div className="show-password-container">
-              <input type="checkbox" className="check-box" />
-              <p>Show Passwords</p>
+              <input
+                type="checkbox"
+                onClick={this.onClickShowPass}
+                id="checkbox"
+                className="check-box"
+              />
+              <label htmlFor="checkbox">Show passwords</label>
             </div>
             {isEmpty ? (
               <div className="bottom-container">
@@ -138,12 +186,17 @@ class App extends Component {
                   src="https://assets.ccbp.in/frontend/react-js/no-passwords-img.png"
                   alt="no passwords"
                 />
-                <h1>No Passwords</h1>
+                <p>No Passwords</p>
               </div>
             ) : (
               <ul className="list-password">
-                {passList.map(eachPass => (
-                  <PasswordItem passItem={eachPass} key={eachPass.id} />
+                {filteredList.map(eachPass => (
+                  <PasswordItem
+                    deleteItem={this.deleteItem}
+                    isShow={isShow}
+                    passItem={eachPass}
+                    key={eachPass.id}
+                  />
                 ))}
               </ul>
             )}

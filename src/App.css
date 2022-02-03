@@ -102,13 +102,15 @@ body {
 .number-style {
   background-color: transparent;
   border: solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 10px;
   border-width: 1px;
   height: 20px;
   width: 25px;
   color: white;
-  margin-top: 6px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .special-nav {
   width: 300px;
